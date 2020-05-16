@@ -1,59 +1,57 @@
-# Project Title
+# NeuralExplorer
 
-NeuralExplorer: State Space Exploration of ClosedLoop Control Systems Using Neural Networks.
+State Space Exploration of ClosedLoop Control Systems Using Neural Networks.
 
-## Getting Started
+## Introduction
+The software first approximates the sensitivity and inverse sensitivity functions using neural network.
+Then, these neural networks are used to falsify a given system or derive system simulations for reachability.
+The examples in this tutorial primarily focus on inverse sensitivity; the application and usage in the context 
+of forward sensitivity follows directly.
 
+### Prerequisites and installation
 
-### Prerequisites
+1) python3.0
 
-Jupyter notebook and Python3.0
+2) Jupyter notebook
 
-```
-Give examples
-```
+3) keras
 
-### Installing
+4) numpy
 
-A step by step series of examples that tell you how to get a development env running
+5) matplotlib
 
-Say what the step will be
+6) itertools
 
-```
-Give the example
-```
+7) tensorflow
 
-And repeat
+8) sklearn
 
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
 
 ## Running the tests
 
-Explain how to run the automated tests for this system
+All experiments are organized in different notebooks located in eval-notebooks directory under 'eval' folder.
+The user can look at these notebooks to understand their utility and run their own tests.
+Although notebook titles are self explanatory, some of their descriptions are given below.
 
-### Break down into end to end tests
-
-Explain what these tests test and why
-
+Runs corresponding to basic algorithm for reaching a given state using inverse sensitivity
 ```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
+eval-inv-sen-basic
 ```
 
-## Deployment
+Runs where basic algorithm is performed multiple times and mean of their results is computed.
+```
+eval-inv-sen-avg
+```
 
-Add additional notes about how to deploy this on a live system
+Runs to perform falsification (given an unsafe set) using inverse sensitivity
+```
+eval-inv-sen-falsification
+```
+
+Runs to perform reachability using forward sensitivity
+```
+eval-fwd-sen-reachability
+```
 
 ## Authors
 

@@ -7,7 +7,6 @@ from frechet import norm
 from learningModule import DataConfiguration
 from circleRandom import generate_points_in_circle
 from mpl_toolkits import mplot3d
-import random as rand
 import os.path
 from os import path
 import time
@@ -134,7 +133,7 @@ class Evaluation(object):
 
         return output
 
-    def reachDest_fwd(self, src=None, dests=None, time_step=None, threshold=None):
+    def reachDestFwd(self, src=None, dests=None, time_step=None, threshold=None):
         start = time.time()
         model_f_name = self.eval_dir + '/models/model_v_2_vp_'
         model_f_name = model_f_name + self.data_object.dynamics
@@ -223,7 +222,8 @@ class Evaluation(object):
                 if min_dist > curr_dist:
                     min_dist = curr_dist
                     ref_state = new_ref_state[0]
-                    #  print("Orig Destination {} actual {} ref state {} min_dist {}".format(dest, new_traj[d_time_step], ref_state, min_dist))
+                    #  print("Orig Destination {} actual {} ref state {} min_dist {}".format(dest,
+                    #  new_traj[d_time_step], ref_state, min_dist))
                 iteration = iteration + 1
 
             error_profiles.append(error_profile)
@@ -475,7 +475,7 @@ class Evaluation(object):
         end = time.time()
         print("Time taken: {}".format(end - start))
 
-    def compute_reachableSet(self, time_bound=100, plot_point_cloud=False):
+    def reachabilityFwd(self, time_bound=100, plot_point_cloud=False):
         start = time.time()
         model_f_name = self.eval_dir + 'models/model_v_2_vp_'
         model_f_name = model_f_name + self.data_object.dynamics
@@ -1153,12 +1153,12 @@ class Evaluation(object):
 
     '''' Evaluation using random points in unit circle'''
 
-    def evaluate_4_vp_random(self, d_time_steps=None):
+    def evaluateRandomVecsInv(self, d_time_steps=None):
 
         assert self.data_object is not None
         assert d_time_steps is not None
 
-        model_f_name = './models/model_vp_2_v_'
+        model_f_name = self.eval_dir + '/models/model_vp_2_v_'
         model_f_name = model_f_name + self.data_object.dynamics
         model_f_name = model_f_name + '.h5'
         model_v = None
@@ -1185,7 +1185,7 @@ class Evaluation(object):
             ref_traj = self.data_object.generateTrajectories(samples=1)
             xp_val = ref_traj[0][time_step]
             x_val = ref_traj[0][0]
-            points = generate_points_in_circle(n_samples=500, dim=self.data_object.dimensions)
+            points = generate_points_in_circle(n_samples=100, dim=self.data_object.dimensions)
             abs_error_t = []
             rel_error_t = []
             for scale in scales:

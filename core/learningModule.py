@@ -31,10 +31,11 @@ class DataConfiguration(configuration):
         configuration.__init__(self, timeStep=timeStep, dynamics=dynamics, dimensions=dimensions)
         self.data = []
         self.dimensions = dimensions
+        self.eval_dir = '../../eval/'
 
     def dumpDataConfiguration(self):
 
-        d_obj_f_name = './dconfigs/d_object_' + self.dynamics + '.txt'
+        d_obj_f_name = self.eval_dir + '/dconfigs/d_object_' + self.dynamics + '.txt'
         if path.exists(d_obj_f_name):
             os.remove(d_obj_f_name)
         d_obj_f = open(d_obj_f_name, 'w')
@@ -335,14 +336,14 @@ class CreateTrainNN(NNConfiguration):
         print(predicted_train.shape)
 
         if self.predict_var is 'v':
-            v_f_name = "./models/model_vp_2_v_"
+            v_f_name = "../../eval/models/model_vp_2_v_"
             v_f_name = v_f_name + str(self.dynamics)
             v_f_name = v_f_name + ".h5"
             if path.exists(v_f_name):
                 os.remove(v_f_name)
             model.save(v_f_name)
         elif self.predict_var is 'vp':
-            vp_f_name = "./models/model_v_2_vp_"
+            vp_f_name = "../../eval/models/model_v_2_vp_"
             vp_f_name = vp_f_name + str(self.dynamics)
             vp_f_name = vp_f_name + ".h5"
             if path.exists(vp_f_name):
@@ -442,9 +443,9 @@ class CreateTrainNN(NNConfiguration):
             plt.show()
 
         if self.predict_var is 'v':
-            f_name = './outputs/v_vals_'
+            f_name = '../../eval/outputs/v_vals_'
         else:
-            f_name = './outputs/vp_vals_'
+            f_name = '../../eval/outputs/vp_vals_'
         f_name = f_name + self.dynamics
         f_name = f_name + ".txt"
         if path.exists(f_name):
