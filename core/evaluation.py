@@ -1,10 +1,9 @@
-import sys
-sys.path.append('../configuration_setup/')
+# import sys
+# sys.path.append('../configuration-setup/')
 
 from keras.models import load_model
 import numpy as np
 from frechet import norm
-import matplotlib.pyplot as plt
 from learningModule import DataConfiguration
 from circleRandom import generate_points_in_circle
 from mpl_toolkits import mplot3d
@@ -28,6 +27,7 @@ class Evaluation(object):
         self.usafelowerBoundArray = []
         self.usafeupperBoundArray = []
         self.staliro_run = False
+        self.eval_dir = '../../eval/'
 
     def getDataObject(self):
         assert self.data_object is not None
@@ -36,7 +36,7 @@ class Evaluation(object):
     def setDataObject(self, d_obj_f_name=None):
 
         if d_obj_f_name is None:
-            d_obj_f_name = './dconfigs/d_object_'+self.dynamics+'.txt'
+            d_obj_f_name = self.eval_dir + 'dconfigs/d_object_'+self.dynamics+'.txt'
 
         if path.exists(d_obj_f_name):
             d_obj_f = open(d_obj_f_name, 'r')
@@ -136,7 +136,7 @@ class Evaluation(object):
 
     def reachDest_fwd(self, src=None, dests=None, time_step=None, threshold=None):
         start = time.time()
-        model_f_name = './models/model_v_2_vp_'
+        model_f_name = self.eval_dir + '/models/model_v_2_vp_'
         model_f_name = model_f_name + self.data_object.dynamics
         model_f_name = model_f_name + '.h5'
         if path.exists(model_f_name):
@@ -477,7 +477,7 @@ class Evaluation(object):
 
     def compute_reachableSet(self, time_bound=100, plot_point_cloud=False):
         start = time.time()
-        model_f_name = './models/model_v_2_vp_'
+        model_f_name = self.eval_dir + 'models/model_v_2_vp_'
         model_f_name = model_f_name + self.data_object.dynamics
         model_f_name = model_f_name + '.h5'
         if path.exists(model_f_name):
@@ -606,9 +606,9 @@ class Evaluation(object):
         ax3.set_title("Actual displacement")
         plt.show()
 
-    def compute_bkd_reachableSet(self, time_bound=100):
+    def reachabilityInv(self, time_bound=100):
         start = time.time()
-        model_f_name = './models/model_vp_2_v_'
+        model_f_name = self.eval_dir + 'models/model_vp_2_v_'
         model_f_name = model_f_name + self.data_object.dynamics
         model_f_name = model_f_name + '.h5'
         if path.exists(model_f_name):
@@ -696,7 +696,7 @@ class Evaluation(object):
                 plt.plot(simulated[:, x_index], simulated[:, y_index], color='green')
                 plt.plot(predicted[:, x_index], predicted[:, y_index], color='red')
         plt.xlabel('x1')
-        plt.ylabel('x2Yes')
+        plt.ylabel('x2')
         plt.title("Actual vs derived trajectories")
         plt.legend()
         plt.show()
@@ -724,14 +724,14 @@ class Evaluation(object):
         ax2.set_title("Actual displacement")
         plt.show()
 
-        plt.figure(1)
-        for idx in range(len(error_vecs_magnitude)):
-            error_vec_magnitude = error_vecs_magnitude[idx]
-            plt.plot(error_vec_magnitude)
-        plt.xlabel('time')
-        plt.ylabel('2-norm')
-        plt.title("2-norm of the difference in displacements")
-        plt.show()
+        # plt.figure(1)
+        # for idx in range(len(error_vecs_magnitude)):
+        #     error_vec_magnitude = error_vecs_magnitude[idx]
+        #     plt.plot(error_vec_magnitude)
+        # plt.xlabel('time')
+        # plt.ylabel('l2-norm')
+        # plt.title("l2-norm of the difference in displacements")
+        # plt.show()
 
     def reachDest_wo_f(self, ref_traj=None, dest=None, d_time_step=0, threshold=0.1, model_v=None):
 
@@ -893,7 +893,7 @@ class Evaluation(object):
 
         return min_dist_state, min_dist
 
-    def reachDest_tr(self, src, dests, d_time_steps, threshold, model_v):
+    def reachDestTimeRange(self, src, dests, d_time_steps, threshold, model_v):
 
         start = d_time_steps[0]
         end = d_time_steps[len(d_time_steps)-1]
@@ -953,7 +953,7 @@ class Evaluation(object):
             plt.legend()
             plt.show()
 
-            mt_sim_file_name = './matlab_figs/mt_simulation_' + self.dynamics+'_tr.m'
+            mt_sim_file_name = self.eval_dir + '/matlab_figs/mt_simulation_' + self.dynamics+'_tr.m'
             x_index = 0
             y_index = 1
 
@@ -982,14 +982,21 @@ class Evaluation(object):
                 mt_sim_file.write('dest_state_{} = [{},{}];\n'.format(idx, dest[x_index], dest[y_index]))
             mt_sim_file.close()
 
-    def reachDest(self, src=None, dests=None, d_time_steps=None, threshold=0.1, eval_first_step=False, plot_point_cloud=False):
+    def reachDestInv(self, src=None, dests=None, d_time_steps=None, threshold=0.1, basic=False, eval_first_step=False,
+                     plot_point_cloud=False):
 
         if d_time_steps is None:
             d_time_steps = [10]
         assert self.data_object is not None
 
+        if basic is True or self.staliro_run is True:
+            self.n_states = 1
+
+        if eval_first_step is True:
+            self.iter_count = 1
+
         start = time.time()
-        model_f_name = './models/model_vp_2_v_'
+        model_f_name = self.eval_dir + 'models/model_vp_2_v_'
         model_f_name = model_f_name + self.data_object.dynamics
         model_f_name = model_f_name + '.h5'
         if path.exists(model_f_name):
@@ -998,15 +1005,11 @@ class Evaluation(object):
             print("Model file does not exists for the benchmark {}".format(self.data_object.dynamics))
             return
 
-        # tr is for time range
         if len(d_time_steps) > 1:
-            self.reachDest_tr(src, dests, d_time_steps, threshold, model_v)
+            self.reachDestTimeRange(src, dests, d_time_steps, threshold, model_v)
             return
 
         d_time_step = d_time_steps[0]
-
-        if eval_first_step is True:
-            self.iter_count = 1
 
         ref_states_for_dest = []
         staliro_i_states = []
@@ -1036,14 +1039,15 @@ class Evaluation(object):
                     # self.data_object.showTrajectories(ref_traj)
 
                     # print("state: {}", curr_ref_traj[0])
-                    curr_iter_states, curr_state, curr_dist = self.reachDest_wo_f(curr_ref_traj, dest, d_time_step, threshold, model_v)
+                    curr_iter_states, curr_state, curr_dist = self.reachDest_wo_f(curr_ref_traj, dest, d_time_step,
+                                                                                  threshold, model_v)
                     if curr_dist < dist:
                         dist = curr_dist
                         iter_states = curr_iter_states
                         state = curr_state
                         ref_traj = curr_ref_traj
 
-                if self.n_states == 1:
+                if basic is True or self.staliro_run is True:
                     for idx in range(len(iter_states)):
                         iter_state = iter_states[idx]
                         states.append(self.check_for_bounds(iter_state))
@@ -1080,18 +1084,42 @@ class Evaluation(object):
                         states.append(ref_traj[0])
                         states.append(state)
 
-            # When self.n_states is > 1
-            if avg_rel_dist != 1.0 and self.staliro_run is False:
+            if basic is True:
+                self.plotResultsBasic(states, d_time_step, dest, dists)  # Plotting for n_states = 1
+                # self.plotResultsMatlab(states, d_time_step, dest, dists)
+
+            elif avg_rel_dist != 1.0 and self.staliro_run is False:
                 avg_rel_dist = (avg_rel_dist / self.n_states)
                 avg_dist = (avg_dist / self.n_states)
                 avg_rel_dist_1 = (avg_rel_dist_1 / self.n_states)
                 avg_dist_1 = (avg_dist_1 / self.n_states)
-                print("Avg new dist 1 {} rel dist 1 {} for n_states {}".format(avg_dist_1, avg_rel_dist_1, self.n_states))
-                print("Avg new dist {} {} rel dist {} {} for n_states {}".format(self.iter_count, avg_dist, self.iter_count, avg_rel_dist, self.n_states))
+                print("Avg new dist 1 {} rel dist 1 {} for n_states {}".format(avg_dist_1, avg_rel_dist_1,
+                                                                               self.n_states))
+                print("Avg new dist {} {} rel dist {} {} for n_states {}".format(self.iter_count, avg_dist,
+                                                                                 self.iter_count, avg_rel_dist,
+                                                                                 self.n_states))
 
             if self.staliro_run is True:
                 staliro_i_states.append(states)
                 staliro_dists.append(dists)
+
+            # plt.figure(1)
+            # x_index = 0
+            # y_index = 1
+            # plt.xlabel('x' + str(x_index))
+            # plt.ylabel('x' + str(y_index))
+            # test_dests = []
+            # for state in ref_states_for_dest:
+            #     test_traj = self.data_object.generateTrajectories(r_states=[state])[0]
+            #     test_dests.append(test_traj[d_time_step])
+            #
+            # ref_states_for_dest = np.asarray(ref_states_for_dest)
+            # test_dests = np.asarray(test_dests)
+            # # print(ref_states_for_dest, ref_states_for_dest.shape)
+            # plt.plot(ref_states_for_dest[:, 0], ref_states_for_dest[:, 1], 'g*')
+            # # plt.plot(test_dests[1:100, 0], test_dests[1:100, 1], 'bo')
+            # plt.plot(dest[x_index], dest[y_index], 'r^')
+            # plt.show()
 
         if self.staliro_run is True:
             best_i_state = None
@@ -1116,30 +1144,10 @@ class Evaluation(object):
                 print("Destination {} Ref state {} Pred Init state {} Pred Dest state {} Distance {}".format(best_dest,
                                                                 best_ref_state, best_i_state, best_d_state, best_dist))
                 if plot_point_cloud is True:
-                    self.plotStaliroResults(staliro_i_states, best_i_state, staliro_dists)
+                    self.plotStaliroResults(staliro_i_states, best_i_state, d_time_step, staliro_dists)
                 else:
-                    self.plotStaliroResults(staliro_i_states, best_i_state, None)
+                    self.plotStaliroResults(staliro_i_states, best_i_state, d_time_step, None)
 
-            # plt.figure(1)
-            # x_index = 0
-            # y_index = 1
-            # plt.xlabel('x' + str(x_index))
-            # plt.ylabel('x' + str(y_index))
-            # test_dests = []
-            # for state in ref_states_for_dest:
-            #     test_traj = self.data_object.generateTrajectories(r_states=[state])[0]
-            #     test_dests.append(test_traj[d_time_step])
-            #
-            # ref_states_for_dest = np.asarray(ref_states_for_dest)
-            # test_dests = np.asarray(test_dests)
-            # # print(ref_states_for_dest, ref_states_for_dest.shape)
-            # plt.plot(ref_states_for_dest[:, 0], ref_states_for_dest[:, 1], 'g*')
-            # # plt.plot(test_dests[1:100, 0], test_dests[1:100, 1], 'bo')
-            # plt.plot(dest[x_index], dest[y_index], 'r^')
-            # plt.show()
-
-            # self.plotResults(states, d_time_step, dest, dists) # Plotting for n_states = 1
-            # self.plotResultsMatlab(states, d_time_step, dest, dists)
         end = time.time()
         print("Time taken: {}".format(end - start))
 
@@ -1241,7 +1249,7 @@ class Evaluation(object):
 
         return
 
-    def plotStaliroResults(self, staliro_i_states, best_i_state, staliro_dists=None):
+    def plotStaliroResults(self, staliro_i_states, best_i_state, d_time_step, staliro_dists=None):
 
         u_x_min = self.usafelowerBoundArray[0]
         u_x_max = self.usafeupperBoundArray[0]
@@ -1310,8 +1318,8 @@ class Evaluation(object):
                         val_idx = int(np.floor(dist * 10))
                         point_cloud[val_idx].append(temp_states[idy])
 
-            for idx in range(len(point_cloud)):
-                print(len(point_cloud[idx]))
+            # for idx in range(len(point_cloud)):
+            #     print(len(point_cloud[idx]))
 
             cmap = plt.get_cmap('gnuplot')
             colors = [cmap(i) for i in np.linspace(0, 1, 10)]
@@ -1337,9 +1345,10 @@ class Evaluation(object):
                     else:
                         ax.scatter(point[0], point[1], color=colors[idx])
                     first_point = False
+            plt.legend()
 
         traj = self.data_object.generateTrajectories(r_states=[best_i_state])[0]
-        traj = traj[0:180]
+        traj = traj[0:d_time_step+50]
 
         ax.plot(traj[:, 0], traj[:, 1])
 
@@ -1347,14 +1356,13 @@ class Evaluation(object):
         ax.set_ylabel('x2')
         # ax.set_xlim(5, 10)
         # ax.set_ylim(5, 30)
-        plt.legend()
         plt.show()
 
     def plotResultsMatlab(self, states, d_time_step, dest, dists):
         if self.n_states == 1:
-            sim_file_name = './matlab_figs/Basic1/mt_simulation_' + self.dynamics
+            sim_file_name = self.eval_dir + './matlab_figs/Basic1/mt_simulation_' + self.dynamics
         else:
-            sim_file_name = './matlab_figs/Basic2/mt_simulation_' + self.dynamics
+            sim_file_name = self.eval_dir + './matlab_figs/Basic2/mt_simulation_' + self.dynamics
 
         if self.data_object.dimensions == 2 or self.data_object.dimensions == 6:
             mt_sim_file_name = sim_file_name + '_basic.m'
@@ -1598,7 +1606,7 @@ class Evaluation(object):
             mt_sim_file.write('dest_state = [{},{}];\n'.format(dest[x_index], dest[y_index]))
             mt_sim_file.close()
 
-    def plotResults(self, states, d_time_step, dest, dists):
+    def plotResultsBasic(self, states, d_time_step, dest, dists):
         if self.data_object.dimensions == 2:
             plt.figure(1)
             x_index = 0

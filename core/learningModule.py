@@ -1,5 +1,5 @@
 import sys
-sys.path.append('../configuration_setup/')
+sys.path.append('../configuration-setup/')
 from NNConfiguration_keras import NNConfiguration
 from itertools import combinations
 from configuration import configuration
