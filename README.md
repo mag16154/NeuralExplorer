@@ -53,9 +53,8 @@ eval-inv-sen-avg
 eval-inv-sen-falsification
 ```
 
-<img align="left" width="430" src="fig-inv-sen-falsification.png" alt="abc">
-<img align="right" width="430" src="fig-inv-sen-falsify-point-cloud.png" alt="abcd">
-
+<img align="left" width="450" src="fig-inv-sen-falsification.png" alt="inv-sen-falsification">
+<img align="right" width="450" src="fig-inv-sen-falsify-point-cloud.png" alt="inv-sen-falsify-pointcloud">
 
 * In order to generate the corresponding point cloud based on distance profiles, one can look at the runs in
 
@@ -65,8 +64,8 @@ eval-fwd-sen-falsify-point-cloud
 
 * Runs to perform reachability using forward sensitivity
 
-<img align="left" width="430" src="fig-fwd-sen-reach-act.png" alt="abc">
-<img align="right" width="430" src="fig-fwd-sen-reach-pred.png" alt="abcd">
+<img align="left" width="430" src="fig-fwd-sen-reach-act.png" alt="fwd-sen-reach-act">
+<img align="right" width="430" src="fig-fwd-sen-reach-pred.png" alt="fwd-sen-reach-pred">
 
 ```eval-fwd-sen-reachability```
 
