@@ -43,14 +43,14 @@ Although notebook titles are self explanatory, some of their descriptions are gi
 
 <p align="center"> <img src="fig-inv-sen-falsification.png" alt="inv-sen-falsification"/> </p>
 
-* In order to generate the point cloud based on distance profiles - `eval-fwd-sen-falsify-point-cloud`
+* In order to generate the corresponding point cloud based on distance profiles - `eval-fwd-sen-falsify-point-cloud`
 
 <p align="center"> <img src="fig-inv-sen-falsify-point-cloud.png" alt="inv-sen-falsify-pointcloud"/> </p>
 
 * Runs to perform reachability using forward sensitivity - `eval-fwd-sen-reachability`
 
-<img align="left" width="430" src="fig-fwd-sen-reach-act.png" alt="fwd-sen-reach-act">
-<img align="right" width="430" src="fig-fwd-sen-reach-pred.png" alt="fwd-sen-reach-pred">
+<img align="left" width="400" src="fig-fwd-sen-reach-act.png" alt="fwd-sen-reach-act">
+<img align="right" width="400" src="fig-fwd-sen-reach-pred.png" alt="fwd-sen-reach-pred">
 
 ## Authors
 
