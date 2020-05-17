@@ -48,8 +48,8 @@ eval-inv-sen-avg
 
 * Runs to perform falsification (given an unsafe set) using inverse sensitivity
 
-<p> <img src="fig-inv-sen-falsification.png" alt="invSenFalsification"/> </p>
-<p> <img src="fig-inv-sen-falsify-point-cloud.png" alt="invSenFalsification pointCloud"/> </p>
+<p align="left"> <img src="fig-inv-sen-falsification.png" alt="invSenFalsification"/> </p>
+<p align="right"> <img src="fig-inv-sen-falsify-point-cloud.png" alt="invSenFalsification pointCloud"/> </p>
 
 ```
 eval-inv-sen-falsification
@@ -62,8 +62,8 @@ eval-fwd-sen-falsify-point-cloud
 ```
 
 * Runs to perform reachability using forward sensitivity
-<p> <img src="fig-fwd-sen-reach-act.png" alt="fwdSenReachabilityAct"/> </p>
-<p> <img src="fig-fwd-sen-reach-pred.png" alt="fwdSenReachabilityPred"/> </p>
+<p align="left"> <img src="fig-fwd-sen-reach-act.png" alt="fwdSenReachabilityAct"/> </p>
+<p align="right"> <img src="fig-fwd-sen-reach-pred.png" alt="fwdSenReachabilityPred"/> </p>
 
 ```eval-fwd-sen-reachability```
 
