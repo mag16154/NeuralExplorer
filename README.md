@@ -52,6 +52,11 @@ Although notebook titles are self explanatory, some of their descriptions are gi
 <img align="left" width="400" src="fig-fwd-sen-reach-act.png" alt="fwd-sen-reach-act">
 <img align="right" width="400" src="fig-fwd-sen-reach-pred.png" alt="fwd-sen-reach-pred">
 
+* Runs to perform point cloud while falsifying using forward sensitivity - `eval-fwd-sen-falsify-point-cloud`
+
+<img align="left" width="400" src="fig-fwd-sen-falsify-act.png" alt="fwd-sen-falsify-act">
+<img align="right" width="400" src="fig-fwd-sen-falsify-pred.png" alt="fwd-sen-falsify-pred">
+
 ## Authors
 
 * **Manish Goyal** - *Initial work* - [PurpleBooth](https://github.com/mag16154)
