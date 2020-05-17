@@ -49,8 +49,8 @@ Although notebook titles are self explanatory, some of their descriptions are gi
 
 * Runs to perform reachability using forward sensitivity - `eval-fwd-sen-reachability`
 
-<img align="left" width="400" src="fig-fwd-sen-reach-act.png" alt="fwd-sen-reach-act">
-<img align="right" width="400" src="fig-fwd-sen-reach-pred.png" alt="fwd-sen-reach-pred">
+<img align="left" width="420" src="fig-fwd-sen-reach-act.png" alt="fwd-sen-reach-act">
+<img align="right" width="420" src="fig-fwd-sen-reach-pred.png" alt="fwd-sen-reach-pred">
 
 * Runs to perform point cloud while falsifying using forward sensitivity - `eval-fwd-sen-falsify-point-cloud`
 
