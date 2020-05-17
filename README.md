@@ -59,10 +59,8 @@ Although notebook titles are self explanatory, some of their descriptions are gi
 
 ## Authors
 
-* **Manish Goyal** - *Initial work* - [PurpleBooth](https://github.com/mag16154)
+* Manish Goyal, with input from Parasara **Sridhar** Duggirala (https://www.cs.unc.edu/~psd/)
 
 
 ## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
+The project is licensed under the GPL v3 license (see the LICENSE file).
