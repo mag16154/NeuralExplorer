@@ -47,6 +47,9 @@ eval-inv-sen-avg
 ```
 
 Runs to perform falsification (given an unsafe set) using inverse sensitivity
+
+<p align="center"> <img src="fig-inv-sen-falsification.png" alt="invSenFalsification"/> </p>
+<p align="center"> <img src="fig-inv-sen-falsify-point-cloud.png" alt="invSenFalsify pointCloud"/> </p>
 ```
 eval-inv-sen-falsification
 ```
