@@ -49,14 +49,15 @@ eval-inv-sen-avg
 
 * Runs to perform falsification (given an unsafe set) using inverse sensitivity
 
+<p align="center"> <img src="fig-inv-sen-falsification.png" alt="inv-sen-falsification"/> </p>
+
 ```
 eval-inv-sen-falsification
 ```
 
-<img align="left" width="450" src="fig-inv-sen-falsification.png" alt="inv-sen-falsification">
-<img align="right" width="450" src="fig-inv-sen-falsify-point-cloud.png" alt="inv-sen-falsify-pointcloud">
-
 * In order to generate the corresponding point cloud based on distance profiles, one can look at the runs in
+
+<p align="center"> <img src="fig-inv-sen-falsify-point-cloud.png" alt="inv-sen-falsify-pointcloud"/> </p>
 
 ```
 eval-fwd-sen-falsify-point-cloud
