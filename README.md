@@ -42,18 +42,20 @@ eval-inv-sen-basic
 ```
 
 * Runs where basic algorithm is performed multiple times and mean of their results is computed.
+
 ```
 eval-inv-sen-avg
 ```
 
 * Runs to perform falsification (given an unsafe set) using inverse sensitivity
 
-<img align="left" src="fig-inv-sen-falsification.png" alt="abc">
-<img align="right" src="fig-inv-sen-falsify-point-cloud.png" alt="abcd">
-
 ```
 eval-inv-sen-falsification
 ```
+
+<img align="left" src="fig-inv-sen-falsification.png" alt="abc">
+<img align="right" src="fig-inv-sen-falsify-point-cloud.png" alt="abcd">
+
 
 * In order to generate the corresponding point cloud based on distance profiles, one can look at the runs in
 
