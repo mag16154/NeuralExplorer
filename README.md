@@ -33,7 +33,7 @@ All experiments are organized in different notebooks located in eval-notebooks d
 The user can look at these notebooks to understand their utility and run their own tests.
 Although notebook titles are self explanatory, some of their descriptions are given below.
 
-Runs corresponding to basic algorithm 'reachTarget' for reaching a given state using inverse sensitivity
+* Runs corresponding to basic algorithm 'reachTarget' for reaching a given state using inverse sensitivity
 
 <p align="center"> <img src="fig-inv-sen-basic.png" alt="reachTarget algorithm"/> </p>
 
@@ -41,23 +41,31 @@ Runs corresponding to basic algorithm 'reachTarget' for reaching a given state u
 eval-inv-sen-basic
 ```
 
-Runs where basic algorithm is performed multiple times and mean of their results is computed.
+* Runs where basic algorithm is performed multiple times and mean of their results is computed.
 ```
 eval-inv-sen-avg
 ```
 
-Runs to perform falsification (given an unsafe set) using inverse sensitivity
+* Runs to perform falsification (given an unsafe set) using inverse sensitivity
 
-<p align="center"> <img src="fig-inv-sen-falsification.png" alt="invSenFalsification"/> </p>
-<p align="center"> <img src="fig-inv-sen-falsify-point-cloud.png" alt="invSenFalsify pointCloud"/> </p>
+<p> <img src="fig-inv-sen-falsification.png" alt="invSenFalsification"/> </p>
+<p> <img src="fig-inv-sen-falsify-point-cloud.png" alt="invSenFalsification pointCloud"/> </p>
+
 ```
 eval-inv-sen-falsification
 ```
 
-Runs to perform reachability using forward sensitivity
+* In order to generate the corresponding point cloud based on distance profiles, one can look at the runs in
+
 ```
-eval-fwd-sen-reachability
+eval-fwd-sen-falsify-point-cloud
 ```
+
+* Runs to perform reachability using forward sensitivity
+<p> <img src="fig-fwd-sen-reach-act.png" alt="fwdSenReachabilityAct"/> </p>
+<p> <img src="fig-fwd-sen-reach-pred.png" alt="fwdSenReachabilityPred"/> </p>
+
+```eval-fwd-sen-reachability```
 
 ## Authors
 
