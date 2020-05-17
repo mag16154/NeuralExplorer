@@ -53,8 +53,8 @@ eval-inv-sen-avg
 eval-inv-sen-falsification
 ```
 
-<img align="left" width="250" src="fig-inv-sen-falsification.png" alt="abc">
-<img align="right" width="250" src="fig-inv-sen-falsify-point-cloud.png" alt="abcd">
+<img align="left" width="500" src="fig-inv-sen-falsification.png" alt="abc">
+<img align="right" width="500" src="fig-inv-sen-falsify-point-cloud.png" alt="abcd">
 
 
 * In order to generate the corresponding point cloud based on distance profiles, one can look at the runs in
