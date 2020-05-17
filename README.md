@@ -51,6 +51,9 @@ eval-inv-sen-avg
 <p align="left" width="500"> <img src="fig-inv-sen-falsification.png" alt="invSenFalsification"/> </p>
 <p align="right" width="500"> <img src="fig-inv-sen-falsify-point-cloud.png" alt="invSenFalsification pointCloud"/> </p>
 
+<img align="left" src="fig-inv-sen-falsification.png" alt="abc">
+<img align="right" src="fig-inv-sen-falsify-point-cloud" alt="abcd">
+
 ```
 eval-inv-sen-falsification
 ```
