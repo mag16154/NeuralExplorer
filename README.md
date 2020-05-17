@@ -10,21 +10,21 @@ of forward sensitivity follows directly.
 
 ### Prerequisites and installation
 
-1) python3.0
+* python3.0
 
-2) Jupyter notebook
+* Jupyter notebook
 
-3) keras
+* keras
 
-4) numpy
+* numpy
 
-5) matplotlib
+* matplotlib
 
-6) itertools
+* itertools
 
-7) tensorflow
+* tensorflow
 
-8) sklearn
+* sklearn
 
 
 ## Running the tests
@@ -33,7 +33,10 @@ All experiments are organized in different notebooks located in eval-notebooks d
 The user can look at these notebooks to understand their utility and run their own tests.
 Although notebook titles are self explanatory, some of their descriptions are given below.
 
-Runs corresponding to basic algorithm for reaching a given state using inverse sensitivity
+Runs corresponding to basic algorithm 'reachTarget' for reaching a given state using inverse sensitivity
+
+<p align="center"> <img src="fig-inv-sen-basic.png" alt="reachTarget algorithm"/> </p>
+
 ```
 eval-inv-sen-basic
 ```
