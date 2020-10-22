@@ -42,6 +42,7 @@ class DnnController(object):
             for item, val in weights.items():
                 self.weights.append(np.array(val))
             self.n_layers = len(self.activations)
+        yaml_f.close()
 
     def performForwardPass(self, input):
         assert self.input_dimensions == len(input)
@@ -65,8 +66,8 @@ class DnnController(object):
                 current_layer_output = np.copy(wx_b)
                 current_layer_output[np.where(current_layer_output <= 0)] = 0
                 current_layer_output[np.where(current_layer_output >= 1)] = 1
-                print("In SatReLU")
-                print(wx_b, current_layer_output)
+                # print("In SatReLU")
+                # print(wx_b, current_layer_output)
             else:
                 current_layer_output = wx_b
                 # print("Linear")
@@ -85,6 +86,7 @@ class Plant(object):
         traj = []
         traj.append(np.array(init_state))
         prev_state = init_state
+        # print(prev_state)
         controller_output = self.dnn_controller.performForwardPass(prev_state)
         # print(controller_output[-1])
         prev_pos = prev_state[0]
@@ -240,17 +242,17 @@ class Plant(object):
         ttc = []
         acc = []
         brakes = []
+        vels = []
         traj.append(np.array(init_state))
         prev_state = init_state
 
         norm_mat = np.array([[0.004, 0.0, 0.0], [0.0, 0.03, 0.0], [0.0, 0.0, 0.05]])
         vel_scale = 0.03
-        output_scale = 500
+        output_scale = 120/3.6
         # prev_state = np.array([1.0, 1.0, 1.0])
         prev_pos = prev_state[0]
         prev_vel = prev_state[1]
         prev_acc = prev_state[2]
-        controller_output = np.array([prev_acc])
         # acc.append(prev_acc)
         # ttc.append(self.computeTTC(init_state))
         # brake = self.dnn_controller.performForwardPass(np.matmul(norm_mat, np.array(prev_state)))
@@ -261,31 +263,34 @@ class Plant(object):
         # print(prev_pos, prev_vel)
         for step in range(0, self.steps):
             next_pos = (prev_pos - dt*prev_vel)
-            next_vel = (prev_vel + dt * controller_output[-1])
-            next_acc = (controller_output[-1])
+            next_vel = (prev_vel + dt * prev_acc)
+            next_acc = prev_acc
             next_state = [next_pos, next_vel, next_acc]
 
             brake = self.dnn_controller.performForwardPass(np.dot(norm_mat, np.array(next_state)))
-            tf_input = [brake[-1], vel_scale*next_vel]
-            controller_output = self.dnn_transform.performForwardPass(tf_input)
-            controller_output[-1] = controller_output[-1]*output_scale
-            # print(next_state, init_state)
-            # traj.append(np.multiply(next_state, init_state))
-            traj.append(next_state)
-            ttc.append(self.computeTTC(next_state))
+            normalized_vel = vel_scale * next_vel
+            tf_input = [normalized_vel, brake[-1]]
+            tf_output = self.dnn_transform.performForwardPass(tf_input)
+            controller_output = (tf_output[-1] - normalized_vel)*output_scale*15
+            # print(controller_output)
+            prev_acc = controller_output
             prev_pos = next_pos
             prev_vel = next_vel
-            prev_acc = next_acc
-            acc.append(prev_acc)
+            new_state = [prev_pos, prev_vel, prev_acc]
+            traj.append(new_state)
             brakes.append(brake)
+            acc.append(prev_acc)
+            vels.append(prev_vel)
+            ttc.append(self.computeTTC(next_state))
 
-        print(ttc)
-        plt.plot(ttc)
-        plt.show()
-        plt.plot(acc)
-        plt.show()
-        plt.plot(brakes)
-        plt.show()
+        # plt.plot(ttc)
+        # plt.show()
+        # plt.plot(acc)
+        # plt.show()
+        # plt.plot(brakes)
+        # plt.show()
+        # plt.plot(vels)
+        # plt.show()
         return traj
 
     def simulate_vehicle_platoon(self, init_state):
@@ -403,10 +408,10 @@ class Plant(object):
         # plt.show()
         return traj
 
-    def getSimulations(self, states):
-        if self.dnn_controller is not None:
+    def getSimulations(self, states, do_not_parse=False):
+        if self.dnn_controller is not None and do_not_parse is False:
             self.dnn_controller.parseDNNYML(self.model)
-        if self.model is 'ABS':
+        if self.model is 'ABS' and do_not_parse is False:
             self.dnn_transform.parseDNNYML(self.model)
         # print("Generating Trajectories")
         trajectories = []
@@ -429,10 +434,10 @@ class Plant(object):
                 trajectories += [np.array(traj)]
             return trajectories
         elif self.model is 'ABS':
-            print(self.steps)
+            # print(self.steps)
             for state in states:
                 # state[2] = 0.0
-                print("State {}".format(state))
+                # print("State {}".format(state))
                 traj = self.simulate_abs(state)
                 trajectories += [np.array(traj)]
             return trajectories

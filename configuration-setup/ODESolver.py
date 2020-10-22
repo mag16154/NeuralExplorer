@@ -29,17 +29,47 @@ def generateTrajectories(dynamics, states, time):
 	return trajectories
 
 
-def plotTrajectories(trajectories, xindex=0, yindex=1):
+def plotTrajectories(trajectories, xindex=0, yindex=1, dimwise=False):
 
 	# given trajectories, plots each of them
 
-	plt.figure(1)
-	plt.xlabel('x'+str(xindex))
-	plt.ylabel('x'+str(yindex))
+	if dimwise is True:
+		plt.figure(1)
+		plt.xlabel('x' + str(xindex))
 
-	for i in range(0, len(trajectories)):
-		traj = trajectories[i]
-		plt.plot(traj[:, xindex], traj[:, yindex], 'b-')
+		for i in range(0, len(trajectories)):
+			traj = trajectories[i]
+			plt.plot(traj[:, xindex], 'b-')
 
-	plt.show()
+		plt.show()
+
+		plt.figure(1)
+		plt.xlabel('x' + str(yindex))
+
+		for i in range(0, len(trajectories)):
+			traj = trajectories[i]
+			plt.plot(traj[:, yindex], 'b-')
+
+		plt.show()
+
+		# zindex = 2
+		# plt.figure(1)
+		# plt.xlabel('x' + str(zindex))
+		#
+		# for i in range(0, len(trajectories)):
+		# 	traj = trajectories[i]
+		# 	plt.plot(traj[:, zindex], 'b-')
+		#
+		# plt.show()
+
+	else:
+		plt.figure(1)
+		plt.xlabel('x'+str(xindex))
+		plt.ylabel('x'+str(yindex))
+
+		for i in range(0, len(trajectories)):
+			traj = trajectories[i]
+			plt.plot(traj[:, xindex], traj[:, yindex], 'b-')
+
+		plt.show()
 

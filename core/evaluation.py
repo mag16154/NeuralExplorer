@@ -1,7 +1,7 @@
 # import sys
 # sys.path.append('../configuration-setup/')
 
-from keras.models import load_model
+from tensorflow.keras.models import load_model
 import numpy as np
 from frechet import norm
 from learningModule import DataConfiguration
@@ -17,7 +17,7 @@ import matplotlib.patches as patches
 
 
 class Evaluation(object):
-    def __init__(self, dynamics):
+    def __init__(self, dynamics, diff_level='default'):
         self.data_object = None
         self.debug_print = False
         self.dynamics = dynamics
@@ -27,6 +27,7 @@ class Evaluation(object):
         self.usafeupperBoundArray = []
         self.staliro_run = False
         self.eval_dir = '../../eval/'
+        self.diff_level = diff_level
 
     def getDataObject(self):
         assert self.data_object is not None
@@ -35,12 +36,22 @@ class Evaluation(object):
     def setDataObject(self, d_obj_f_name=None):
 
         if d_obj_f_name is None:
-            d_obj_f_name = self.eval_dir + 'dconfigs/d_object_'+self.dynamics+'.txt'
+            d_obj_f_name = self.eval_dir + 'dconfigs/d_object_'+self.dynamics
+
+        if self.dynamics == 'AeroBench':
+            d_obj_f_name = d_obj_f_name + "_"
+            if self.diff_level == 'default':
+                d_obj_f_name = d_obj_f_name + "2"
+            elif self.diff_level == 'medium':
+                d_obj_f_name = d_obj_f_name + "5"
+        d_obj_f_name = d_obj_f_name +'.txt'
 
         if path.exists(d_obj_f_name):
             d_obj_f = open(d_obj_f_name, 'r')
             lines = d_obj_f.readlines()
             line_idx = 0
+            grad_run = bool(lines[line_idx])
+            line_idx += 1
             dimensions = int(lines[line_idx])
             line_idx += 1
             steps = int(lines[line_idx][:-1])
@@ -989,6 +1000,7 @@ class Evaluation(object):
             d_time_steps = [10]
         assert self.data_object is not None
 
+        # No of states on which we take an average of MRE/MSE
         if basic is True or self.staliro_run is True:
             self.n_states = 1
 
@@ -998,6 +1010,12 @@ class Evaluation(object):
         start = time.time()
         model_f_name = self.eval_dir + 'models/model_vp_2_v_'
         model_f_name = model_f_name + self.data_object.dynamics
+        if self.data_object.dynamics == 'AeroBench':
+            model_f_name = model_f_name + "_"
+            if self.diff_level == 'default':
+                model_f_name = model_f_name + "2"
+            elif self.diff_level == 'medium':
+                model_f_name = model_f_name + "5"
         model_f_name = model_f_name + '.h5'
         if path.exists(model_f_name):
             model_v = load_model(model_f_name, compile=False)

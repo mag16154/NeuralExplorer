@@ -1,7 +1,7 @@
 
 class NNConfiguration(object):
 
-    def __init__(self):
+    def __init__(self, dnn_rbf='dnn'):
         self.relativeError = []
         self.mseError = []
         self.input = None
@@ -12,6 +12,7 @@ class NNConfiguration(object):
         self.learning_rate = 0.01
         self.batch_size = 64
         self.test_size = 0.1
+        self.DNN_or_RBF = dnn_rbf
 
     def setInputSize(self, input_size):
         self.input_size = input_size

@@ -5,23 +5,17 @@ from itertools import combinations
 from configuration import configuration
 import os.path
 from os import path
-import keras
-from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation
-from keras import losses
-import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Input, Dropout, Activation
+from tensorflow.keras.losses import mean_absolute_error, mean_squared_error, mean_absolute_percentage_error, hinge
+from tensorflow.keras.optimizers import RMSprop, SGD, Adam
 import numpy as np
-from keras import backend as K
+from tensorflow.keras import backend as K
 from sklearn.model_selection import train_test_split
 from frechet import norm
 import matplotlib.pyplot as plt
-from keras.layers import BatchNormalization
+from tensorflow.keras.layers import BatchNormalization
 import random
-import re
-# Custom activation function
-from keras.layers import Activation
-from keras.utils.generic_utils import get_custom_objects
-from rbflayer import RBFLayer, InitCentersRandom
 
 
 class DataConfiguration(configuration):
@@ -34,11 +28,15 @@ class DataConfiguration(configuration):
         self.eval_dir = '../../eval/'
 
     def dumpDataConfiguration(self):
-
-        d_obj_f_name = self.eval_dir + '/dconfigs/d_object_' + self.dynamics + '.txt'
+        d_obj_f_name = self.eval_dir + '/dconfigs/d_object_' + self.dynamics
+        if self.dynamics is "AeroBench":
+            d_obj_f_name += "_"
+            d_obj_f_name += str(self.dimensions)
+        d_obj_f_name += '.txt'
         if path.exists(d_obj_f_name):
             os.remove(d_obj_f_name)
         d_obj_f = open(d_obj_f_name, 'w')
+        d_obj_f.write(str(self.grad_run) + '\n')
         d_obj_f.write(str(self.dimensions)+'\n')
         d_obj_f.write(str(self.steps)+'\n')
         d_obj_f.write(str(self.samples)+'\n')
@@ -96,7 +94,7 @@ class DataConfiguration(configuration):
             trajectories += [np.array(traj)]
         self.trajectories = trajectories
 
-    def createData(self, jumps=[1], dim=-1):
+    def createData(self, dim=-1, jumps=[1]):
         assert self.lowerBoundArray is not [] and self.upperBoundArray is not []
         assert dim < self.dimensions
         self.dumpDataConfiguration()
@@ -159,6 +157,9 @@ class DataConfiguration(configuration):
     def getDimensions(self):
         return self.dimensions
 
+    def getEvalDir(self):
+        return self.eval_dir
+
     def getRandomDataPoints(self, num):
         data_points = []
         for val in range(num):
@@ -192,6 +193,7 @@ class CreateTrainNN(NNConfiguration):
 
     def createInputOutput(self, data_object, inp_vars, out_vars):
         assert data_object.getDynamics() == self.dynamics
+        self.eval_dir = data_object.getEvalDir()
         inp_indices = []
         out_indices = []
         data = data_object.getData()
@@ -255,7 +257,7 @@ class CreateTrainNN(NNConfiguration):
         def swish(x):
             return K.sigmoid(x) * 5
 
-        get_custom_objects().update({'custom_activation': Activation(swish)})
+        #   get_custom_objects().update({'custom_activation': Activation(swish)})
 
         if act_fn is 'Tanh':
             act = 'tanh'
@@ -311,24 +313,22 @@ class CreateTrainNN(NNConfiguration):
         model.add(Dense(self.output_size, activation='linear'))
 
         if optim is 'Adam':
-            optimizer = keras.optimizers.Adam(learning_rate=self.learning_rate, beta_1=0.9, beta_2=0.999, amsgrad=False)
+            optimizer = Adam(learning_rate=self.learning_rate, beta_1=0.9, beta_2=0.999, amsgrad=False)
         elif optim is 'RMSProp':
-            optimizer = keras.optimizers.RMSprop(learning_rate=self.learning_rate, rho=0.9)
+            optimizer = RMSprop(learning_rate=self.learning_rate, rho=0.9)
         else:
-            optimizer = keras.optimizers.SGD(learning_rate=self.learning_rate, decay=1e-6, momentum=0.9, nesterov=True)
+            optimizer = SGD(learning_rate=self.learning_rate, decay=1e-6, momentum=0.9, nesterov=True)
 
         if loss_fn is 'mse':
-            model.compile(loss=losses.mean_squared_error, optimizer=optimizer, metrics=['accuracy'])
+            model.compile(loss=mean_squared_error, optimizer=optimizer, metrics=['accuracy'])
         elif loss_fn is 'mae':
-            model.compile(loss=losses.mean_absolute_error, optimizer=optimizer, metrics=['accuracy', 'mse'])
+            model.compile(loss=mean_absolute_error, optimizer=optimizer, metrics=['accuracy', 'mse'])
         elif loss_fn is 'mape':
-            model.compile(loss=losses.mean_absolute_percentage_error, optimizer=optimizer, metrics=['accuracy', 'mse'])
+            model.compile(loss=mean_absolute_percentage_error, optimizer=optimizer, metrics=['accuracy', 'mse'])
         elif loss_fn is 'mre':
             model.compile(loss=mre_loss, optimizer=optimizer, metrics=['accuracy', 'mse'])
 
-        model.fit(inputs_train, targets_train,
-                  epochs=self.epochs,
-                  batch_size=self.batch_size, verbose=1)
+        model.fit(inputs_train, targets_train, epochs=self.epochs, batch_size=self.batch_size, verbose=1)
         # score = model.evaluate(self.x_test, self.y_test, batch_size=self.batch_size)
         # print(score)
 
@@ -336,15 +336,21 @@ class CreateTrainNN(NNConfiguration):
         print(predicted_train.shape)
 
         if self.predict_var is 'v':
-            v_f_name = "../../eval/models/model_vp_2_v_"
+            v_f_name = self.eval_dir + "models/model_vp_2_v_"
             v_f_name = v_f_name + str(self.dynamics)
+            if self.dynamics == "AeroBench":
+                v_f_name = v_f_name + "_"
+                v_f_name = v_f_name + str(self.dimensions)
             v_f_name = v_f_name + ".h5"
             if path.exists(v_f_name):
                 os.remove(v_f_name)
             model.save(v_f_name)
         elif self.predict_var is 'vp':
-            vp_f_name = "../../eval/models/model_v_2_vp_"
+            vp_f_name = self.eval_dir + "models/model_v_2_vp_"
             vp_f_name = vp_f_name + str(self.dynamics)
+            if self.dynamics == "AeroBench":
+                vp_f_name = vp_f_name + "_"
+                vp_f_name = vp_f_name + str(self.dimensions)
             vp_f_name = vp_f_name + ".h5"
             if path.exists(vp_f_name):
                 os.remove(vp_f_name)
@@ -353,14 +359,15 @@ class CreateTrainNN(NNConfiguration):
         # mse_train = mean_squared_error(predicted_train, targets_train)
 
         predicted_test = model.predict(inputs_test)
-        predicted_train = tf.cast(predicted_train, tf.float64)
-        predicted_test = tf.cast(predicted_test, tf.float64)
 
-        with tf.Session() as sess:
-            # print(sess.run(mse_train))
-            # print(sess.run(mse_test))
-            predicted_train = sess.run(predicted_train)
-            predicted_test = sess.run(predicted_test)
+        # predicted_train = tf.cast(predicted_train, tf.float64)
+        # predicted_test = tf.cast(predicted_test, tf.float64)
+        #
+        # with tf.compat.v1.Session() as sess:
+        #     # print(sess.run(mse_train))
+        #     # print(sess.run(mse_test))
+        #     predicted_train = sess.run(predicted_train)
+        #     predicted_test = sess.run(predicted_test)
 
         max_se_train = 0.0
         min_se_train = 1000.0
@@ -443,10 +450,13 @@ class CreateTrainNN(NNConfiguration):
             plt.show()
 
         if self.predict_var is 'v':
-            f_name = '../../eval/outputs/v_vals_'
+            f_name = self.eval_dir + 'outputs/v_vals_'
         else:
-            f_name = '../../eval/outputs/vp_vals_'
+            f_name = self.eval_dir + 'outputs/vp_vals_'
         f_name = f_name + self.dynamics
+        if self.dynamics == "AeroBench":
+            f_name = f_name + "_"
+            f_name = f_name + str(self.dimensions)
         f_name = f_name + ".txt"
         if path.exists(f_name):
             os.remove(f_name)
